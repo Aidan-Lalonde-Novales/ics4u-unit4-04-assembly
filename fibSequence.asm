@@ -11,7 +11,6 @@ section .bss
   someNumber: RESD 1                     ; 4 bytes
 
 section .data
-
   ; constants here
   newLine: db 10                       ; UNICODE 10 is new line character
   done: db 10, "Done.", 10             ; string to print
@@ -21,16 +20,27 @@ section .text
   global _start                        ; entry point for linker
 
   _start:                              ; start here
-    mov r8, -1                       ; move the integer 0 into r8
-    mov r9, 9 -1                     ; move the integer 9 into r9
+    mov r8, 1                          ; move the integer 0 into r8
+    mov r9, 0                          ; move the integer 9 into r9
+    mov r10, 1                         ; n2
+    mov r11, 0                         ; nth
 
     IncrementLabel:
       ; doing a do ... while loop!
       inc r8
-      push r8
+      push r9
       call PrintSingleDigitInt     ; call our print single digit function
+
+      ; adding
+      mov r11, r9
+      add r11, r10
+
+      ; update values
+      mov r9, r10
+      mov r10, r11
+
       add rsp, 4                   ; pop but throw away the value
-      cmp r8, 9-1                  ; compare r8 and ascii 9
+      cmp r8, 8-1                  ; compare r8 and ascii 9
       jle IncrementLabel           ; jump if <= goto "LoopLable"
 
       ; write done to screen
@@ -46,7 +56,6 @@ section .text
 
 PrintSingleDigitInt:
   ; takes in a single digit int and prints the assci equivalent
-
   ; when a function is called, the return value is placed on the stack
   ; we need to keep this, so that we can return to the corret place in our program!
   pop r14                     ; pop the return address to r9
@@ -60,8 +69,6 @@ PrintSingleDigitInt:
   mov rsi, rsp                ; the string to write popped from the top of the stack
   mov rdx, 1                  ; number of bytes
   syscall                     ; invoke operating system to do the write
-  ;add     $8, %rsp    # restore sp -> not sure this is neede!
-  ; https://stackoverflow.com/questions/8201613/printing-a-character-to-standard-output-in-assembly-x86
 
   ; print a new line
   mov rax, 1                  ; system call for write
