@@ -15,19 +15,19 @@ STDOUT equ 1    ; define standard output
 ;-----------------------------------------------;
 
 section .bss
-  tempLen equ 2                         ; length of output
-  temp resb tempLen                     ; variable to hold numbers
+  numLen equ 2                                    ; length of output
+  num resb numLen                                ; variable to hold numbers
 
 section .data
-  newline: db 10                        ; represents new line
-  newlineLen: equ $-newline             ; length of new line
-  opening: db "Printing 0-9...", 10     ; first line to be printed
-  openingLen: equ $-opening             ; length of opneing
-  done: db "Done.", 10                  ; ending line
-  doneLen: equ $-done                   ; length of done
+  newline: db 10                                   ; represents new line
+  newlineLen: equ $-newline                        ; length of new line
+  opening: db "Printing Fibonacci Sequence...", 10 ; first line to be printed
+  openingLen: equ $-opening                        ; length of opneing
+  done: db "Done.", 10                             ; ending line
+  doneLen: equ $-done                              ; length of done
 
 section .text
-  global_start:                         ; entry point for linker
+  global_start:                                    ; entry point for linker
 
   _start:
     ; print opening
@@ -44,7 +44,7 @@ section .text
     mov rdx, newlineLen
     syscall
 
-    ; assign ascii char 48 (num 0) to register 8
+    ; assign ascii characters to registers (0 and 9 respectively)
     mov r8, 48
 
     loop:
