@@ -44,33 +44,18 @@ section .text
     mov rdx, newlineLen
     syscall
 
-    ; assign ascii characters to registers (0 and 9 respectively)
-    mov r8, 48
+    ; move 0 into r8, 9 into r9
+    mov r8, -1
+    mov r9, 9 -1
 
-    loop:
-    ; mov value of r8 to number output variable
-    mov [temp], r8
-
-    ; r8 + 1
-    inc r8
-
-    ; print temp
-    mov rax, SYS_WRITE
-    mov rdi, STDOUT
-    mov rsi, temp
-    mov rdx, tempLen
-    syscall
-
-    ; print new line
-    mov rax, SYS_WRITE
-    mov rdi, STDOUT
-    mov rsi, newline
-    mov rdx, newlineLen
-    syscall
-
-    ; compare
-    cmp r8, 57
-    jle loop   ; Jump up to loop if r8 <= 57
+    IncrementLabel:
+      ; do while loop
+      inc r8
+      inc r9
+      call PrintSingleDigitInt     ; call single digit function
+      add rsp, 4                   ; pop but throw away the value
+      cmp r8, 9-1                  ; compare r8 and ascii 9
+      jle IncrementLabel           ; jump if <= goto "LoopLable"
 
     ; print new line
     mov rax, SYS_WRITE
@@ -90,3 +75,30 @@ section .text
     mov rax, SYS_EXIT
     mov rdi, 0
     syscall
+
+PrintSingleDigitInt:
+  ; takes in a single digit int and prints the ascii equivalent
+
+  ; when a function is called, the return value is placed on the stack
+  ; we need to keep this, so that we can return to the corret place in our program!
+  pop r14                     ; pop the return address to r9
+  pop r15                     ; pop the "parameter" we placed on the stack
+  add r15, 48                 ; add the ascii offset
+  push r15                    ; place it back onto the stack
+
+  ; write value on the stack to STDOUT
+  mov rax, SYS_WRITE          ; system call for write
+  mov rdi, STDOUT             ; file handle 1 is stdout
+  mov rsi, rsp                ; the string to write popped from the top of the stack
+  mov rdx, 1                  ; number of bytes
+  syscall                     ; invoke operating system to do the write
+
+  ; print new line
+  mov rax, SYS_WRITE
+  mov rdi, STDOUT
+  mov rsi, newline
+  mov rdx, newlineLen
+  syscall
+
+  push r14                    ; put the return address back on the stack to get back
+  ret                         ; return
